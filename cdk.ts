@@ -1,4 +1,3 @@
-import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
@@ -29,7 +28,16 @@ export class SesSmtpCredentialsProvider extends cdk.Construct {
                 initialPolicy: [
                     new iam.PolicyStatement({
                         resources: ['*'],
-                        actions: ['iam:CreateUser', 'iam:PutUserPolicy', 'iam:CreateAccessKey', 'iam:DeleteUser', 'iam:DeleteUserPolicy', 'iam:DeleteAccessKey'],
+                        actions: [
+                            'iam:CreateUser',
+                            'iam:PutUserPolicy',
+                            'iam:CreateAccessKey',
+                            'iam:DeleteUser',
+                            'iam:DeleteUserPolicy',
+                            'iam:DeleteAccessKey',
+                            'secretsmanager:CreateSecret',
+                            'secretsmanager:UpdateSecret',
+                        ],
                     }),
                 ],
             }),
@@ -39,7 +47,10 @@ export class SesSmtpCredentialsProvider extends cdk.Construct {
 
 export class SesSmtpCredentials extends cdk.Construct {
     public readonly region: string;
-    private resource: cfn.CustomResource;
+    public readonly roleNameSuffix: string;
+    public readonly secretName: string;
+
+    private resource: cdk.CustomResource;
 
     constructor(scope: cdk.Construct, id: string, props: SesSmtpCredentialsProps) {
         super(scope, id);
@@ -47,20 +58,18 @@ export class SesSmtpCredentials extends cdk.Construct {
             throw new Error('No region specified');
         }
         this.region = props.region;
-        this.resource = new cfn.CustomResource(this, 'Resource', {
-            provider: SesSmtpCredentialsProvider.getOrCreate(this),
+        this.roleNameSuffix = props.roleNameSuffix;
+        this.secretName = props.secretName;
+
+        const provider = SesSmtpCredentialsProvider.getOrCreate(this);
+        this.resource = new cdk.CustomResource(this, 'Resource', {
+            serviceToken: provider.serviceToken,
             resourceType: 'Custom::SesSmtpCredentials',
             properties: {
                 Region: this.region,
+                RoleNameSuffix: this.roleNameSuffix,
+                SecretName: this.secretName,
             },
         });
-    }
-
-    public username(): string {
-        return this.resource.getAttString('Username');
-    }
-
-    public password(): string {
-        return this.resource.getAttString('Password');
     }
 }

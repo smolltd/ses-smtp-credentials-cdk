@@ -3,7 +3,7 @@ import {
     CloudFormationCustomResourceDeleteEvent,
     CloudFormationCustomResourceEvent,
     CloudFormationCustomResourceResponse,
-    CloudFormationCustomResourceUpdateEvent,
+    CloudFormationCustomResourceUpdateEvent
 } from 'aws-lambda';
 import * as AWS from 'aws-sdk';
 import * as crypto from 'crypto';
@@ -41,10 +41,14 @@ export const getSmtpPassword = (key: string, region: string) => {
 
 export const onCreate = async (event: CloudFormationCustomResourceCreateEvent): Promise<CloudFormationCustomResourceResponse> => {
     const region = event.ResourceProperties.Region;
+    const roleNameSuffix = event.ResourceProperties.RoleNameSuffix;
+    const secertName = event.ResourceProperties.SecretName;
+
     const iam = new AWS.IAM();
+    const secretsManager = new AWS.SecretsManager();
 
     const now = new Date();
-    const userName = `ses-user-${now.toISOString().replace('T', '.').replace('Z', '').replace(/:/g, '-')}`;
+    const userName = `ses-user-${roleNameSuffix}`;
 
     const user = await iam
         .createUser({
@@ -73,9 +77,24 @@ export const onCreate = async (event: CloudFormationCustomResourceCreateEvent): 
             UserName: user.User.UserName,
         })
         .promise();
+    
+    const secret = await secretsManager.createSecret({
+        Name: secertName
+    }).promise();
+
     const username = accessKey.AccessKey.AccessKeyId;
     const secretKey = accessKey.AccessKey.SecretAccessKey;
     const password = getSmtpPassword(secretKey, region);
+
+    secretsManager.updateSecret({
+        SecretId: secertName,
+        SecretString: JSON.stringify({
+            username,
+            secretKey,
+            password
+        })
+    })
+
     return {
         Status: 'SUCCESS',
         PhysicalResourceId: `${user.User.UserName}/${accessKey.AccessKey.AccessKeyId}`,
@@ -83,8 +102,7 @@ export const onCreate = async (event: CloudFormationCustomResourceCreateEvent): 
         RequestId: event.RequestId,
         LogicalResourceId: event.LogicalResourceId,
         Data: {
-            Username: username,
-            Password: password,
+            SecretARN: secret.ARN,
         },
     };
 };

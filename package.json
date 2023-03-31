@@ -1,9 +1,10 @@
 {
-  "name": "ses-smtp-credentials-cdk",
-  "version": "1.2.3",
+  "name": "@smolltd/ses-smtp-credentials-cdk",
+  "version": "1.2.6",
   "description": "Create SMTP Credentials for use with SES",
   "main": "lib/index.js",
   "scripts": {
+    "prepare": "npm run build",
     "compile": "tsc",
     "clean": "rm -rf ./lib",
     "build": "npm run clean && npm run compile && npm run compile-provider && cp -R ./provider/build/ ./lib/provider/ && cp package.json README.md ./lib",
@@ -15,22 +16,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/isotoma/ses-smtp-credentials-cdk.git"
+    "url": "git+https://github.com/smolltd/ses-smtp-credentials-cdk.git"
   },
   "author": "Isotoma Limited",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/isotoma/ses-smtp-credentials-cdk/issues"
+    "url": "https://github.com/smolltd/ses-smtp-credentials-cdk/issues"
   },
-  "homepage": "https://github.com/isotoma/ses-smtp-credentials-cdk#readme",
+  "homepage": "https://github.com/smolltd/ses-smtp-credentials-cdk#readme",
   "peerDependencies": {
-    "@aws-cdk/aws-cloudformation": "^1.89.0",
-    "@aws-cdk/aws-iam": "^1.89.0",
-    "@aws-cdk/aws-lambda": "^1.89.0",
-    "@aws-cdk/core": "^1.89.0",
-    "@aws-cdk/custom-resources": "^1.89.0",
-    "aws-cdk-lib": "^2.0.0",
-    "constructs": "^10.0.0"
+    "@aws-cdk/aws-cloudformation": "1.111.0",
+    "@aws-cdk/aws-iam": "1.111.0",
+    "@aws-cdk/aws-lambda": "1.111.0",
+    "@aws-cdk/core": "1.111.0",
+    "@aws-cdk/custom-resources": "1.111.0"
   },
   "peerDependenciesMeta": {
     "@aws-cdk/aws-cloudformation": {
@@ -44,27 +43,16 @@
     },
     "@aws-cdk/core": {
       "optional": true
-    },
-    "@aws-cdk/custom-resources": {
-      "optional": true
-    },
-    "aws-cdk-lib": {
-      "optional": true
-    },
-    "constructs": {
-      "optional": true
     }
   },
   "devDependencies": {
-    "@aws-cdk/aws-lambda": "^1.89.0",
-    "@aws-cdk/core": "^1.89.0",
-    "@aws-cdk/custom-resources": "^1.89.0",
+    "@aws-cdk/aws-lambda": "1.111.0",
+    "@aws-cdk/core": "1.111.0",
+    "@aws-cdk/custom-resources": "1.111.0",
     "@types/node": "^16.11.68",
     "@typescript-eslint/eslint-plugin": "4.8.2",
     "@typescript-eslint/parser": "4.8.2",
     "auto-changelog": "^2.2.1",
-    "aws-cdk-lib": "^2.0.0",
-    "constructs": "^10.0.0",
     "esbuild": "^0.17.8",
     "eslint": "6.8.0",
     "eslint-config-prettier": "6.9.0",
