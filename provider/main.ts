@@ -3,7 +3,7 @@ import {
     CloudFormationCustomResourceDeleteEvent,
     CloudFormationCustomResourceEvent,
     CloudFormationCustomResourceResponse,
-    CloudFormationCustomResourceUpdateEvent
+    CloudFormationCustomResourceUpdateEvent,
 } from 'aws-lambda';
 import * as AWS from 'aws-sdk';
 import * as crypto from 'crypto';
@@ -14,9 +14,12 @@ const policyName = 'ses-smtp-credentials-policy';
 export const sign = (key: string[], msg: string) => {
     // Typescript refuses to allow digest('binary') on this without the type
     // hacking. a bug somewhere.
-    const hmac = crypto.createHmac('sha256', Buffer.from(key.map((a) => a.charCodeAt(0)))).update(utf8.encode(msg)) as any;
+    const hmac = crypto.createHmac('sha256', Buffer.from(key.map(a => a.charCodeAt(0)))).update(utf8.encode(msg)) as any;
 
-    return hmac.digest('binary').toString().split('');
+    return hmac
+        .digest('binary')
+        .toString()
+        .split('');
 };
 
 export const getSmtpPassword = (key: string, region: string) => {
@@ -77,10 +80,12 @@ export const onCreate = async (event: CloudFormationCustomResourceCreateEvent): 
             UserName: user.User.UserName,
         })
         .promise();
-    
-    const secret = await secretsManager.createSecret({
-        Name: secertName
-    }).promise();
+
+    const secret = await secretsManager
+        .createSecret({
+            Name: secertName,
+        })
+        .promise();
 
     const username = accessKey.AccessKey.AccessKeyId;
     const secretKey = accessKey.AccessKey.SecretAccessKey;
@@ -91,9 +96,9 @@ export const onCreate = async (event: CloudFormationCustomResourceCreateEvent): 
         SecretString: JSON.stringify({
             username,
             secretKey,
-            password
-        })
-    })
+            password,
+        }),
+    });
 
     return {
         Status: 'SUCCESS',
