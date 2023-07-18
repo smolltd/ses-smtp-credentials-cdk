@@ -119,7 +119,7 @@ var AWS = __toESM(require("aws-sdk")), crypto = __toESM(require("crypto")), utf8
   let signatureAndVersion = versionInBytes.slice();
   return signature.forEach((a) => signatureAndVersion.push(a.charCodeAt(0))), Buffer.from(signatureAndVersion).toString("base64");
 }, onCreate = async (event) => {
-  let region = event.ResourceProperties.Region, roleNameSuffix = event.ResourceProperties.RoleNameSuffix, secertName = event.ResourceProperties.SecretName, iam = new AWS.IAM(), secretsManager = new AWS.SecretsManager(), now = /* @__PURE__ */ new Date(), userName = `ses-user-${roleNameSuffix}`, user = await iam.createUser({
+  let region = event.ResourceProperties.Region, roleNameSuffix = event.ResourceProperties.RoleNameSuffix, secretName = event.ResourceProperties.SecretName, iam = new AWS.IAM(), secretsManager = new AWS.SecretsManager(), now = /* @__PURE__ */ new Date(), userName = `ses-user-${roleNameSuffix}`, user = await iam.createUser({
     UserName: userName
   }).promise();
   if (!user.User)
@@ -138,10 +138,10 @@ var AWS = __toESM(require("aws-sdk")), crypto = __toESM(require("crypto")), utf8
   }).promise(), accessKey = await iam.createAccessKey({
     UserName: user.User.UserName
   }).promise(), secret = await secretsManager.createSecret({
-    Name: secertName
+    Name: secretName
   }).promise(), username = accessKey.AccessKey.AccessKeyId, secretKey = accessKey.AccessKey.SecretAccessKey, password = getSmtpPassword(secretKey, region);
   return await secretsManager.updateSecret({
-    SecretId: secertName,
+    SecretId: secretName,
     SecretString: JSON.stringify({
       username,
       secretKey,
