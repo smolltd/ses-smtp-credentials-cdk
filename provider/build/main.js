@@ -140,14 +140,14 @@ var AWS = __toESM(require("aws-sdk")), crypto = __toESM(require("crypto")), utf8
   }).promise(), secret = await secretsManager.createSecret({
     Name: secertName
   }).promise(), username = accessKey.AccessKey.AccessKeyId, secretKey = accessKey.AccessKey.SecretAccessKey, password = getSmtpPassword(secretKey, region);
-  return secretsManager.updateSecret({
+  return await secretsManager.updateSecret({
     SecretId: secertName,
     SecretString: JSON.stringify({
       username,
       secretKey,
       password
     })
-  }), {
+  }).promise(), {
     Status: "SUCCESS",
     PhysicalResourceId: `${user.User.UserName}/${accessKey.AccessKey.AccessKeyId}`,
     StackId: event.StackId,

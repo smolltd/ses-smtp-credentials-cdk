@@ -45,7 +45,7 @@ export const getSmtpPassword = (key: string, region: string) => {
 export const onCreate = async (event: CloudFormationCustomResourceCreateEvent): Promise<CloudFormationCustomResourceResponse> => {
     const region = event.ResourceProperties.Region;
     const roleNameSuffix = event.ResourceProperties.RoleNameSuffix;
-    const secertName = event.ResourceProperties.SecretName;
+    const secretName = event.ResourceProperties.SecretName;
 
     const iam = new AWS.IAM();
     const secretsManager = new AWS.SecretsManager();
@@ -83,7 +83,7 @@ export const onCreate = async (event: CloudFormationCustomResourceCreateEvent): 
 
     const secret = await secretsManager
         .createSecret({
-            Name: secertName,
+            Name: secretName,
         })
         .promise();
 
@@ -91,14 +91,16 @@ export const onCreate = async (event: CloudFormationCustomResourceCreateEvent): 
     const secretKey = accessKey.AccessKey.SecretAccessKey;
     const password = getSmtpPassword(secretKey, region);
 
-    secretsManager.updateSecret({
-        SecretId: secertName,
-        SecretString: JSON.stringify({
-            username,
-            secretKey,
-            password,
-        }),
-    });
+    await secretsManager
+        .updateSecret({
+            SecretId: secretName,
+            SecretString: JSON.stringify({
+                username,
+                secretKey,
+                password,
+            }),
+        })
+        .promise();
 
     return {
         Status: 'SUCCESS',
