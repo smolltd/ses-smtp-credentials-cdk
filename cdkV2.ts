@@ -29,7 +29,16 @@ export class SesSmtpCredentialsProviderV2 extends Construct {
                 initialPolicy: [
                     new iam.PolicyStatement({
                         resources: ['*'],
-                        actions: ['iam:CreateUser', 'iam:PutUserPolicy', 'iam:CreateAccessKey', 'iam:DeleteUser', 'iam:DeleteUserPolicy', 'iam:DeleteAccessKey'],
+                        actions: [
+                            'iam:CreateUser',
+                            'iam:PutUserPolicy',
+                            'iam:CreateAccessKey',
+                            'iam:DeleteUser',
+                            'iam:DeleteUserPolicy',
+                            'iam:DeleteAccessKey',
+                            'secretsmanager:CreateSecret',
+                            'secretsmanager:UpdateSecret',
+                        ],
                     }),
                 ],
             }),
@@ -39,6 +48,8 @@ export class SesSmtpCredentialsProviderV2 extends Construct {
 
 export class SesSmtpCredentialsV2 extends Construct {
     public readonly region: string;
+    public readonly roleNameSuffix: string;
+    public readonly secretName: string;
     private resource: cdk.CustomResource;
 
     constructor(scope: Construct, id: string, props: SesSmtpCredentialsProps) {
@@ -47,12 +58,17 @@ export class SesSmtpCredentialsV2 extends Construct {
             throw new Error('No region specified');
         }
         this.region = props.region;
+        this.roleNameSuffix = props.roleNameSuffix;
+        this.secretName = props.secretName;
+
         const provider = SesSmtpCredentialsProviderV2.getOrCreate(this);
         this.resource = new cdk.CustomResource(this, 'Resource', {
             serviceToken: provider.serviceToken,
             resourceType: 'Custom::SesSmtpCredentials',
             properties: {
                 Region: this.region,
+                RoleNameSuffix: this.roleNameSuffix,
+                SecretName: this.secretName,
             },
         });
     }
