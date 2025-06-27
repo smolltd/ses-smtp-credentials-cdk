@@ -42,5 +42,5 @@ https://docs.aws.amazon.com/ses/latest/DeveloperGuide/smtp-credentials.html
 Run
 ```
 $ npm version (patch|minor|major)
-$  npm version [tag you just created]
+$ git push origin master [tag you just created]
 ```

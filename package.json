@@ -1,6 +1,6 @@
 {
   "name": "@smolltd/ses-smtp-credentials-cdk",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "Create SMTP Credentials for use with SES",
   "main": "lib/index.js",
   "scripts": {
@@ -45,3 +45,4 @@
     "aws-cdk-lib": "^2.103.1"
   }
 }
+ 
