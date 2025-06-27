@@ -25,30 +25,10 @@
   },
   "homepage": "https://github.com/smolltd/ses-smtp-credentials-cdk#readme",
   "peerDependencies": {
-    "@aws-cdk/aws-cloudformation": "1.111.0",
-    "@aws-cdk/aws-iam": "1.111.0",
-    "@aws-cdk/aws-lambda": "1.111.0",
-    "@aws-cdk/core": "1.111.0",
-    "@aws-cdk/custom-resources": "1.111.0"
-  },
-  "peerDependenciesMeta": {
-    "@aws-cdk/aws-cloudformation": {
-      "optional": true
-    },
-    "@aws-cdk/aws-iam": {
-      "optional": true
-    },
-    "@aws-cdk/aws-lambda": {
-      "optional": true
-    },
-    "@aws-cdk/core": {
-      "optional": true
-    }
+    "aws-cdk-lib": "2.202.0"
   },
   "devDependencies": {
-    "@aws-cdk/aws-lambda": "1.111.0",
-    "@aws-cdk/core": "1.111.0",
-    "@aws-cdk/custom-resources": "1.111.0",
+    "aws-cdk-lib": "2.202.0",
     "@types/node": "^16.11.68",
     "@typescript-eslint/eslint-plugin": "4.8.2",
     "@typescript-eslint/parser": "4.8.2",
